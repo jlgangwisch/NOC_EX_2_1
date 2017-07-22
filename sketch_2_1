@@ -1,0 +1,89 @@
+balloon b;
+
+void setup (){
+  size (1000,1000);
+  b = new balloon();
+}
+
+void draw (){
+  background (0);
+  b.checkEdge();
+  b.move();
+  b.render();
+}
+
+class balloon {
+
+  PVector vel, loc, acc, noise, wind, helium, resist;
+  float topspeed;
+  float delta;
+  balloon(){
+  
+    loc = new PVector (width/2, height/2);
+    vel = new PVector (0,0);
+    acc = new PVector (0,0);
+    noise = new PVector (0,100000);
+    wind = new PVector (0,0);
+    helium = new PVector (0,-0.25);
+    resist = new PVector (0,0);
+
+    //topspeed = 10;
+    
+  }
+  
+  void render (){
+    stroke(255);
+    noFill();
+    
+    ellipse (loc.x, loc.y, 25,50);
+  }
+  
+  void move (){
+   
+    
+    forces();
+  
+    
+    PVector mouse = new PVector (mouseX, mouseY);
+    PVector dir = PVector.sub(mouse, loc);
+    dir.normalize();
+    vel.add(acc);
+    //vel.limit(topspeed);
+    loc.add(vel);
+    constrain(loc.x, 0, width);
+    constrain(loc.y, 100, height-100);
+    noise.add(0.1,0.1);
+    acc.mult(0);
+    
+  }
+  
+   void checkEdge(){
+  if (loc.x>width){loc.x=1;}
+  if (loc.y>height){vel.y*=-1;loc.y=0;}
+
+  if (loc.x<0){loc.x=width-1;}
+  if (loc.y<100){vel.y*=-1;loc.y=100;}
+
+  }
+  
+ void forces(){
+    
+    PVector mouse = new PVector (mouseX, mouseY);
+    PVector dir = PVector.sub(mouse, loc);
+    dir.normalize();
+    wind.add(dir);
+    wind.mult(-.75);
+    if (vel.x >0){vel.x-=0.1;}
+    if (vel.x <0){vel.x+=0.1;}
+    if (vel.y >0){vel.y-=0.1;}
+    if (vel.y <0){vel.y+=0.1;}
+    
+    acc.add(helium);
+    
+    if(mousePressed){
+      acc.add(wind);
+    }
+ }
+
+  
+}
